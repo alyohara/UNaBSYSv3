@@ -1,3 +1,4 @@
+@php use App\Models\Cuatrimestre; @endphp
 @extends('layouts.app-master')
 
 
@@ -6,7 +7,7 @@
     @include('layouts.partials.messages')
     <div class="bg-light rounded" style="margin-top: 10px">
         @auth
-<h1>Cargos</h1>
+            <h1>Cargos</h1>
             <div class="table-responsive">
                 <button id="completeActoAdmin" class="btn btn-outline-primary"
                         style="float: right; margin-left: 10px">Completar Acto Administrativo / Designacion
@@ -55,8 +56,11 @@
                                     @endphp
                                     @if($cargo->status == 1)
                                         @php
-                                            $isHabilitado = $cargo->fecha_alta < date('Y-m-d') && (!$cargo->fecha_baja || date('Y-m-d') < $cargo->fecha_baja);
-                                        @endphp
+     // $isHabilitado must have fecha alta <= today but >= $cuatrimestre_actual->fecha_inicio && fecha_baja >= today but <= $cuatrimestre_actual->fecha_fin or fecha_baja is null
+                                       $today = Carbon\Carbon::now();
+
+                                       $isHabilitado = ($cargo->fecha_alta <= $today  && $cargo->fecha_alta >= $cuatrimestre_actual->fecha_inicio) && (!$cargo->fecha_baja || ($cargo->fecha_baja >= $today && $cargo->fecha_baja <= $cuatrimestre_actual->fecha_fin));
+                                       @endphp
                                         <a class="btn btn-outline-{{ $isHabilitado ? 'info' : 'danger' }} btn-sm"
                                            href="{{ $isAdminOrAca ? route('cargo.cargoToggle', $cargo->id) : '#' }}">
                                             {{ $isHabilitado ? 'Habilitado' : 'Deshabilitado' }}
