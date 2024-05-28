@@ -149,6 +149,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/renovarCargosCoord', 'CargoController@renovarCargosCoord')->name('cargo.renovarCargosCoord');
         Route::delete('/deleteCargo/{id}', 'CargoController@destroy')->name('cargo.destroy');
         Route::post('/cargosFiltros', 'CargoController@filtros')->name('cargo.filtros');
+        Route::post('/cargosActAdm', 'CargoController@ActAdm')->name('cargo.ActAdm');
 
 
 

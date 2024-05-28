@@ -6,7 +6,11 @@
     @include('layouts.partials.messages')
     <div class="bg-light rounded" style="margin-top: 10px">
         @auth
+<h1>Cargos</h1>
             <div class="table-responsive">
+                <button id="completeActoAdmin" class="btn btn-outline-primary"
+                        style="float: right; margin-left: 10px">Completar Acto Administrativo / Designacion
+                </button>
                 <form method="POST" action="{{ route('cargo.renovarCargos') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
 
@@ -67,6 +71,7 @@
                                                href="{{ $isAdminOrAca ? route('cargo.cargo', $cargo->id) : '#' }}">
                                                 Pendiente de Carga
                                             </a>
+
                                         @elseif ($cargo->status == 3)
                                             <a class="btn btn-outline-secondary btn-sm"
                                                href="{{ $isAdminOrAca ? route('cargo.cargo', $cargo->id) : '#' }}">
@@ -88,6 +93,7 @@
                                             <a class="btn btn-success btn-sm" style="margin-bottom: 5px"
                                                href="{{ route('cargo.cargo', $cargo->id) }}">@if($cargo->status == 2)
                                                     Cargar
+
                                                 @elseif($cargo->status == 3)
                                                     Validar
                                                 @else
@@ -105,7 +111,6 @@
                                         @if($cargo->status < 2)
                                             <a class="btn btn-outline-dark btn-sm" style="align-items: center"
                                                href="{{ route('cargo.renovarCargo', $cargo->id) }}">Renovar</a>
-
                                         @endif
 
 
@@ -113,7 +118,11 @@
                                 </td>
                                 <td>@if ($cargo->act_des != "Pendiente de Carga")
                                         <input type="checkbox" class="form-check-input" name="selected[]"
-                                               value="{{ $cargo->id }}">
+                                               value="{{ $cargo->id }}"> <span style="font-size: smaller">Renovar</span>
+                                    @endif
+                                    @if ($cargo->status == 2)
+                                        <input type="checkbox" class="form-check-input" name="actAdm[]"
+                                               value="{{ $cargo->id }}"> <span style="font-size: smaller">Cargar Acto Administrativo</span>
                                     @endif
                                 </td>
 
@@ -124,7 +133,64 @@
                     </table>
                 </form>
             </div>
+            <!-- Modal -->
+            <div class="modal fade" id="actoAdminModal" tabindex="-1" role="dialog"
+                 aria-labelledby="actoAdminModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="actoAdminModalLabel">Acto Administrativo</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="{{ route('cargo.ActAdm') }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+                            <input type="hidden" name="cargosSelectedIds" value=""/>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="actoAdminNumber" class="col-form-label">Acto Administrativo /
+                                        Disposición:</label>
+                                    <input type="text" class="form-control" id="actoAdminNumber" name="actoAdminNumber">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Cerrar
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="saveActoAdmin">Actualizar</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
             @include('auth.partials.copy')
+            <script>
+                document.getElementById('completeActoAdmin').addEventListener('click', function () {
+                    // Get all checked checkboxes
+                    var checkboxes = document.querySelectorAll('input[name="actAdm[]"]:checked');
+                    if (checkboxes.length === 0) {
+                        alert('Seleccione por lo menos un cargo para completar el Acto Administrativo / Designación.');
+                        return;
+                    } else {
+
+                        // Loop through all checked checkboxes
+                        for (var i = 0; i < checkboxes.length; i++) {
+                            // need to add to cargosSelectedIds all the value of acrgo->id that are checked
+                            var cargosSelectedIds = document.querySelector('input[name="cargosSelectedIds"]');
+                            if (cargosSelectedIds.value === '') {
+                                cargosSelectedIds.value = checkboxes[i].value;
+                            } else {
+                                cargosSelectedIds.value += ',' + checkboxes[i].value;
+                            }
+                        }
+                        $('#actoAdminModal').modal('show');
+
+                    }
+
+
+                });
+            </script>
 
         @endauth
 

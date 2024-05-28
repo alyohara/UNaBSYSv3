@@ -1223,4 +1223,34 @@ class CargoController extends Controller
         $docentes = array_unique($docentes);
         return $docentes;
     }
+    public function ActAdm(Request $request)
+    {
+        $selected = $request->input('cargosSelectedIds');
+        $selected = explode(",", $selected);
+        $actAdm = $request->input('actoAdminNumber');
+        if ($actAdm == null) {
+            return redirect('/cargos')->with('error', "Debe ingresar un número de acto administrativo.");
+        }
+
+
+        foreach ($selected as $id) {
+            $cargo = Cargo::where('id', $id)->where('deleted_at', null)->first();
+            $cargo->act_des = $actAdm;
+            $alerta = new Alerta();
+            $alerta->status = 2;
+            $alerta->usuario_alta = auth()->user()->id;
+            $alerta->titulo = 'Acto Administrativo Cargado';
+            $alerta->descripcion = 'Se ha modificado y validado un cargo';
+            $alerta->tipo = 1;
+            $alerta->origen = 2;
+            $alerta->save();
+            $cargo->fecha_validacion = date('Y-m-d');
+            $cargo->persona_que_lo_valido_id = auth()->user()->userData->id;
+            $cargo->status = 0;
+            $cargo->save();
+        }
+        return redirect('/cargos')->with('success', "Cargos validados correctamente.");
+
+    }
 }
+
