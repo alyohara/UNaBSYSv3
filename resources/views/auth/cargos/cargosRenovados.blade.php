@@ -4,8 +4,9 @@
 
 @section('content')
     @include('layouts.partials.messages')
-    <div class="bg-light p-5 rounded">
+    <div class="bg-light p-1 rounded">
         @auth
+            <h1>Cargos Renovados</h1>
             <div class="table-responsive  nowrap" style="width:100%">
 
                 <table class="table" id="tabla">

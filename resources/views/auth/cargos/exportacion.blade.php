@@ -10,11 +10,12 @@
 
 @section('content')
     @include('layouts.partials.messages')
-    <div class="bg-light p-5 rounded">
+    <div class="bg-light p-1 rounded">
         @auth
+            <h1>Exportación</h1>
 
             <div class="table-responsive  nowrap" style="width:100%">
-                <div class="container mt-5">
+                <div class="mt-5">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                         Filtros Avanzados
                     </button>

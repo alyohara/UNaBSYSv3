@@ -4,8 +4,12 @@
 
 @section('content')
     @include('layouts.partials.messages')
-    <div class="bg-light p-5 rounded">
+    <div class="bg-light p-1 rounded">
         @auth
+            <h1>Cargos sin Validar</h1>
+            <button id="completeActoAdmin" class="btn btn-outline-primary"
+                    style="float: right; margin-left: 10px">Completar Acto Administrativo / Designacion
+            </button>
             <form method="POST" action="{{ route('cargo.validarCargos') }}">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
 
@@ -13,7 +17,7 @@
                         style="position: relative; float: right; margin-bottom: 10px">Validar Cargos
                     Seleccionados
                 </button>
-                <div class="table-responsive  nowrap" style="width:100%">
+                <div class="table  nowrap" style="width:100%">
 
                     <table class="table" id="tabla">
 
@@ -27,8 +31,12 @@
                             <th>Categoria</th>
                             <th>Dedicación Horaria</th>
                             <th>Fecha Alta</th>
+                            <th>Acto Administrativo / Designación</th>
+
                             <th>Renovado Por</th>
                             <th>Estado</th>
+
+
                             <th></th>
                             <th></th>
 
@@ -76,6 +84,7 @@
                                 <td>{{  $cargo->categoria}}</td>
                                 <td>{{  $cargo->dedicacion_horaria}}</td>
                                 <td>{{  $cargo->fecha_alta}}</td>
+                                <td>{{ $cargo->act_des }}</td>
 
                                 <td><b>
                                         {{$cargo->persona_que_lo_renovo ? $cargo->persona_que_lo_renovo->userData->lastname.',' : ''}}
@@ -145,8 +154,25 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <input type="checkbox" class="form-check-input" name="selected[]"
-                                           value="{{ $cargo->id }}">
+
+                                    @if ($cargo->status == 2)
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" role="switch"
+                                                   id="flexSwitchCheckDefault" name="actAdm[]"
+                                                   value="{{ $cargo->id }}">
+                                            <label class="form-check-label" for="flexSwitchCheckDefault"
+                                                   style="font-size: smaller">Cargar</label>
+                                        </div>
+
+                                    @endif
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                               id="flexSwitchCheckDefault" name="selected[]"
+                                               value="{{ $cargo->id }}">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault"
+                                               style="font-size: smaller">Validar</label>
+                                    </div>
+
                                 </td>
 
 
@@ -157,7 +183,66 @@
                     </table>
                 </div>
             </form>
+
+            <!-- Modal -->
+            <div class="modal fade" id="actoAdminModal" tabindex="-1" role="dialog"
+                 aria-labelledby="actoAdminModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="actoAdminModalLabel">Acto Administrativo</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="{{ route('cargo.ActAdm') }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+                            <input type="hidden" name="cargosSelectedIds" value=""/>
+                            <div class="modal-body">
+                                <p><em>Recuerde que al completar la carga del acto adminsitrativo / desiganción, también lo valida</em></p>
+                                <div class="form-group">
+                                    <label for="actoAdminNumber" class="col-form-label">Acto Administrativo /
+                                        Disposición:</label>
+                                    <input type="text" class="form-control" id="actoAdminNumber" name="actoAdminNumber">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Cerrar
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="saveActoAdmin">Actualizar</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
             @include('auth.partials.copy')
+            <script>
+                document.getElementById('completeActoAdmin').addEventListener('click', function () {
+                    // Get all checked checkboxes
+                    var checkboxes = document.querySelectorAll('input[name="actAdm[]"]:checked');
+                    if (checkboxes.length === 0) {
+                        alert('Seleccione por lo menos un cargo para completar el Acto Administrativo / Designación.');
+                        return;
+                    } else {
+
+                        // Loop through all checked checkboxes
+                        for (var i = 0; i < checkboxes.length; i++) {
+                            // need to add to cargosSelectedIds all the value of acrgo->id that are checked
+                            var cargosSelectedIds = document.querySelector('input[name="cargosSelectedIds"]');
+                            if (cargosSelectedIds.value === '') {
+                                cargosSelectedIds.value = checkboxes[i].value;
+                            } else {
+                                cargosSelectedIds.value += ',' + checkboxes[i].value;
+                            }
+                        }
+                        $('#actoAdminModal').modal('show');
+
+                    }
+
+
+                });
+            </script>
 
         @endauth
 
