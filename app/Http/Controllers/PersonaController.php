@@ -396,7 +396,8 @@ class PersonaController extends Controller
         $title = '¡Borrar Persona!';
         $text = "¿Estás seguro que deseas borrar estos datos?";
         confirmDelete($title, $text);
-        return view('auth.persona.personas', ['personas' => $personas]);
+        $materias = Subject::all()->where('deleted_at', null);
+        return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias]);
 
     }
 
@@ -448,6 +449,49 @@ class PersonaController extends Controller
 
 
 
+    }
+
+    public function buscarPersonas(Request $request)
+    {
+        $nombre = $request->get('nombre');
+        $apellido = $request->get('apellido');
+        $doc = $request->get('doc');
+        $email = $request->get('email');
+        $materia_id = $request->get('materia_id');
+        $materia = null;
+        $personas = Persona::where('name', 'like', '%' . $nombre . '%')
+            ->where('lastname', 'like', '%' . $apellido . '%')
+            ->where('doc', 'like', '%' . $doc . '%')
+            ->where('email', 'like', '%' . $email . '%')
+            ->get();
+
+        if ($materia_id){
+            $cargos = Cargo::all()->where('subject_id', $materia_id);
+            $personas = $personas->filter(function ($persona) use ($cargos) {
+                foreach ($cargos as $cargo) {
+                    if ($persona->id == $cargo->persona_id) {
+                        return $persona;
+                    }
+                }
+            });
+            $materia = Subject::find($materia_id);
+
+        }
+
+
+
+        $materias = Subject::all()->where('deleted_at', null);
+        $search = [
+            'nombre' => $request->get('nombre'),
+            'apellido' => $request->get('apellido'),
+            'doc' => $request->get('doc'),
+            'email' => $request->get('email'),
+            'materia_id' => $request->get('materia_id'),
+            'materia' => $materia
+
+
+        ];
+        return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias, 'search' => $search]);
     }
 
 }

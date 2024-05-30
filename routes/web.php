@@ -66,6 +66,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/verPersonaNotDocOnly/{id}', 'PersonaController@verPersonaNotDocOnly')->name('persona.verPersonaNotDocOnly');
         Route::post('/registerPersona', 'PersonaController@store')->name('persona.perform');
         Route::post('/updatePersona', 'PersonaController@update')->name('persona.update');
+        Route::post('/buscarPersonas', 'PersonaController@buscarPersonas')->name('persona.search');
         Route::delete('/deletePersona/{id}', 'PersonaController@destroy')->name('persona.destroy');
 
 
