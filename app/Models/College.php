@@ -48,4 +48,9 @@ class College extends Model
     {
         return $this->belongsTo(User::class, 'usuario_modificacion');
     }
+
+    public function careers()
+    {
+        return $this->hasMany(Career::class);
+    }
 }

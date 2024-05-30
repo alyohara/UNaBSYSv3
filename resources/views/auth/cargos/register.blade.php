@@ -140,6 +140,37 @@
                             <span class="text-danger text-left">{{ $errors->first('subject_id') }}</span>
                         @endif
                     </div>
+                    <div class="row">
+                        <div class="form-group form-floating mb-3 col">
+                            <select class="form-control" name="comision" autofocus required>
+                                <option value="" disabled selected>Seleccione</option>
+                                <option value="1">Comisión 1</option>
+                                <option value="2">Comisión 2</option>
+                                <option value="3">Comisión 3</option>
+                                <option value="4">Comisión 4</option>
+                                <option value="5">Comisión 5</option>
+                                <option value="6">Comisión 6</option>
+                                <option value="7">Comisión 7</option>
+                                <option value="8">Comisión 8</option>
+                                <option value="9">Comisión 9</option>
+                                <option value="10">Comisión 10</option>
+                                <option value="11">Comisión 11</option>
+                                <option value="12">Comisión 12</option>
+                                <option value="13">Comisión 13</option>
+                                <option value="14">Comisión 14</option>
+                                <option value="15">Comisión 15</option>
+                                <option value="16">Comisión 16</option>
+                                <option value="17">Comisión 17</option>
+                                <option value="18">Comisión 18</option>
+                                <option value="19">Comisión 19</option>
+                                <option value="20">Comisión 20</option>
+                            </select>
+                            <label for="floatingName">Comisión</label>
+                            @if ($errors->has('comision'))
+                                <span class="text-danger text-left">{{ $errors->first('comision') }}</span>
+                            @endif
+                        </div>
+                    </div>
                 </div>
                 <div class="h5 pb-2 mb-4 text-success border-bottom border-success">
                     Postulante
@@ -161,6 +192,8 @@
                         @endif
                     </div>
                 </div>
+
+
 
 
                 <button class="w-100 btn btn-lg btn-primary" type="submit">Registrar</button>

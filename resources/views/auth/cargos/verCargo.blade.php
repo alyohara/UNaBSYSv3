@@ -35,6 +35,9 @@
                 <dd class="col-sm-7"><a
                         href="{{ route('subject.verMateria',  $cargo->materia->id) }}"> {{ $cargo->materia->name}}
                         &nbsp; <i class="fa-solid fa-up-right-from-square"></i> </a></dd>
+                <dt class="col-sm-5 text-primary"><i class="fa-solid fa-clipboard-list"></i><b>&nbsp;Comisión:</b></dt>
+                <dd class="col-sm-7">{{ $cargo->comision }}</dd>
+
                 <dt class="col-sm-5 text-primary"><i class="fa-solid fa-user-check"></i><b>&nbsp;Profesor:</b></dt>
                 <dd class="col-sm-7"><a
                         href="{{ route('persona.verPersona',  $cargo->persona_id) }}"> {{ strtoupper($cargo->persona->lastname).', '.$cargo->persona->name}}

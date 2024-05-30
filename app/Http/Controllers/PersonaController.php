@@ -397,7 +397,9 @@ class PersonaController extends Controller
         $text = "¿Estás seguro que deseas borrar estos datos?";
         confirmDelete($title, $text);
         $materias = Subject::all()->where('deleted_at', null);
-        return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias]);
+        $carreras = Career::all()->where('deleted_at', null);
+        $departamentos = College::all()->where('deleted_at', null);
+        return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias, 'carreras' => $carreras, 'departamentos' => $departamentos]);
 
     }
 
@@ -437,16 +439,16 @@ class PersonaController extends Controller
 
 
     }
+
     public function verPersonaNotDocOnly($id)
     {
         $persona = Persona::find($id);
 
-            $types = UserType::all()->sortDesc();
-            $carreras = Career::all();
-            $materias = Subject::all();
-            $cargos = Cargo::all()->where('persona_id', $persona->id);
-            return view('auth.persona.verPersona', ['persona' => $persona, 'types' => $types, 'cargos' => $cargos, 'carreras' => $carreras, 'materias' => $materias]);
-
+        $types = UserType::all()->sortDesc();
+        $carreras = Career::all();
+        $materias = Subject::all();
+        $cargos = Cargo::all()->where('persona_id', $persona->id);
+        return view('auth.persona.verPersona', ['persona' => $persona, 'types' => $types, 'cargos' => $cargos, 'carreras' => $carreras, 'materias' => $materias]);
 
 
     }
@@ -458,6 +460,8 @@ class PersonaController extends Controller
         $doc = $request->get('doc');
         $email = $request->get('email');
         $materia_id = $request->get('materia_id');
+        $carrera_id = $request->get('carrera_id');
+        $departamento_id = $request->get('departamento_id');
         $materia = null;
         $personas = Persona::where('name', 'like', '%' . $nombre . '%')
             ->where('lastname', 'like', '%' . $apellido . '%')
@@ -465,7 +469,7 @@ class PersonaController extends Controller
             ->where('email', 'like', '%' . $email . '%')
             ->get();
 
-        if ($materia_id){
+        if ($materia_id) {
             $cargos = Cargo::all()->where('subject_id', $materia_id);
             $personas = $personas->filter(function ($persona) use ($cargos) {
                 foreach ($cargos as $cargo) {
@@ -475,23 +479,67 @@ class PersonaController extends Controller
                 }
             });
             $materia = Subject::find($materia_id);
+        } else {
+            if ($carrera_id) {
+                $personas_aux = $personas;
+                $personas_suma = collect();
+                $carreras = Career::find($carrera_id);
+                $materias_aux = $carreras->materias;
+                foreach ($materias_aux as $materia_aux) {
+                    $cargos = Cargo::all()->where('subject_id', $materia_aux->id);
+                    $personas_aux = $personas_aux->filter(function ($persona) use ($cargos) {
+                        foreach ($cargos as $cargo) {
+                            if ($persona->id == $cargo->persona_id) {
+                                return $persona;
+                            }
+                        }
+                    });
+                    $personas_suma = $personas_suma->merge($personas_aux);
+                }
+                $personas = $personas_suma->unique();
 
+
+
+            } else {
+                if ($departamento_id) {
+                    $departamento = College::find($departamento_id);
+                    $carreras = $departamento->carreras;
+                    $personas_aux = $personas;
+                    $personas_suma = collect();
+                    foreach ($carreras as $carrera) {
+                        $materias_aux = $carrera->materias;
+                        foreach ($materias_aux as $materia_aux) {
+                            $cargos = Cargo::all()->where('subject_id', $materia_aux->id);
+                            $personas_aux = $personas_aux->filter(function ($persona) use ($cargos) {
+                                foreach ($cargos as $cargo) {
+                                    if ($persona->id == $cargo->persona_id) {
+                                        return $persona;
+                                    }
+                                }
+                            });
+                            $personas_suma = $personas_suma->merge($personas_aux);
+                        }
+                    }
+                }
+            }
         }
 
 
-
         $materias = Subject::all()->where('deleted_at', null);
+        $carreras = Career::all()->where('deleted_at', null);
+        $departamentos = College::all()->where('deleted_at', null);
+
         $search = [
             'nombre' => $request->get('nombre'),
             'apellido' => $request->get('apellido'),
             'doc' => $request->get('doc'),
             'email' => $request->get('email'),
             'materia_id' => $request->get('materia_id'),
-            'materia' => $materia
-
-
+            'materia' => $materia,
+            'carrera_id' => $request->get('carrera_id'),
+            'departamento_id' => $request->get('departamento_id')
         ];
-        return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias, 'search' => $search]);
+        return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias, 'search' => $search, 'carreras' => $carreras, 'departamentos' => $departamentos]);
     }
 
 }

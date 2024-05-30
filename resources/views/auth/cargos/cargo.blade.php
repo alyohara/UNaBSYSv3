@@ -176,6 +176,22 @@
                         @endif
                     </div>
                 </div>
+                <div class="row">
+                    <div class="form-group form-floating mb-3 col">
+                        <select class="form-control" name="comision" autofocus required>
+                            <option value="" disabled selected>Seleccione</option>
+                            @for($i = 1; $i <= 20; $i++)
+                                <option value="{{ $i }}" @if($cargo->comision == $i) selected @endif>{{$i}}</option>
+                            @endfor
+                        </select>
+                        <label for="floatingName">Comisión</label>
+                        @if ($errors->has('comision'))
+                            <span class="text-danger text-left">{{ $errors->first('comision') }}</span>
+                        @endif
+                    </div>
+                </div>
+
+
 
                     <div class="h5 pb-2 mb-4 text-success border-bottom border-success">
                         Postulante

@@ -174,6 +174,12 @@
                                                 Cargos Sin Validar</a></li>
                                         <li><a class="dropdown-item" href="{{ route('cargo.cargosRenovados') }}">Ver
                                                 Cargos Renovados</a></li>
+                                        <li><a class="dropdown-item"
+                                               href="{{ route('cargo.simplificadaAdmin') }}">Carga
+                                                Simplificada</a></li>
+                                    @endif
+                                    @if (in_array('coordinador', $userRoles))
+                                        <li><a class="dropdown-item" href="{{ route('cargo.simplificadaCoord') }}">Carga Simplificada</a></li>
                                     @endif
                                 </ul>
                             </li>
@@ -239,7 +245,7 @@
                                 >
                                     <i class="fas fa-calendar-alt"></i>
                                     Alertas <span
-                                        class="badge text-bg-secondary {{ in_array($currentRouteName, ['alerta.alertas']) ? 'active' : '' }}">{{ \App\Http\Controllers\AjaxController::getAlerts(Auth::user()->id) }}</span>
+                                            class="badge text-bg-secondary {{ in_array($currentRouteName, ['alerta.alertas']) ? 'active' : '' }}">{{ \App\Http\Controllers\AjaxController::getAlerts(Auth::user()->id) }}</span>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" href="{{ route('alerta.alertas') }}">Ver
@@ -251,7 +257,7 @@
                         <li class="nav-item">
                             <a href="{{ route('register.perfil') }}"
                                class="nav-link  {{ ($currentRouteName == 'register.perfil') ? 'active' : '' }} me-2"><i
-                                    class="fas fa-user"></i> Mi
+                                        class="fas fa-user"></i> Mi
                                 Perfil</a>
                         </li>
 
@@ -278,7 +284,7 @@
                 </div>
                 <div class="text-end">
                     <a href="{{ route('logout.perform') }}" class="nav-link  me-2 logout-link"><i
-                            class="fas fa-sign-out-alt"></i> Logout</a>
+                                class="fas fa-sign-out-alt"></i> Logout</a>
                 </div>
             @endauth
             @guest

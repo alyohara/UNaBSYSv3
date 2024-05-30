@@ -151,6 +151,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::delete('/deleteCargo/{id}', 'CargoController@destroy')->name('cargo.destroy');
         Route::post('/cargosFiltros', 'CargoController@filtros')->name('cargo.filtros');
         Route::post('/cargosActAdm', 'CargoController@ActAdm')->name('cargo.ActAdm');
+        Route::get('/cargosSimplificadaAdmin', 'CargoController@simplificadaAdmin')->name('cargo.simplificadaAdmin');
+        Route::get('/cargosSimplificadaCoord', 'CargoController@simplificadaCoord')->name('cargo.simplificadaCoord');
+        Route::post('/cargosSimplificadaCargaAdmin', 'CargoController@simplificadaCargaAdmin')->name('cargo.simplificadaCargaAdmin');
+        Route::post('/cargosSimplificadaCargaCoord', 'CargoController@simplificadaCargaCoord')->name('cargo.simplificadaCargaCoord');
 
 
 

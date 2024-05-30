@@ -10,7 +10,11 @@
                 <h1>Docentes</h1> <h4>@if(isset($search))
                         @foreach($materias as $subject)
                             @if (isset($search)  && $search['materia_id'] == $subject->id)
-                                {{$subject->code.' - '.$subject->name}}
+                                Materia: {{$subject->code.' - '.$subject->name}}
+                            @endif
+                        @endforeach
+                        @foreach($carreras as $carrera)
+                            @if (isset($search)  && $search['carrera_id'] == $carrera->id)Carrera: {{$carrera->CodigoSIU.' - '.$carrera->DenominacionCarrera}}
                             @endif
                         @endforeach
                     @endif </h4>
@@ -58,18 +62,60 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="form-group mb-3 col">
-                                            <select class="form-control" name="materia_id" autofocus id="materia_id">
-                                                <option value="" disabled selected>Seleccione</option>
-                                                @foreach($materias as $subject)
-                                                    <option value="{{ $subject->id }}"
-                                                            @if (isset($search)  && $search['materia_id'] == $subject->id) selected @endif
-                                                    >{{$subject->code.' - '.$subject->name}}</option>
-                                                @endforeach
-
+                                            <select class="form-control" id="categorySelect">
+                                                <option value="" disabled selected>Seleciona</option>
+                                                <option value="subjects">Materias</option>
+                                                <option value="careers">Carreras</option>
+                                                <option value="departments">Departmentos</option>
                                             </select>
-                                            <label for="floatingName">Materia</label>
+                                            <label for="categorySelect">Ámbito de búsqueda</label>
+                                        </div>
+
+                                        <div class="form-group mb-3 col" id="subjectsDiv" style="display: none;">
+                                            <select class="form-control" name="materia_id" id="materia_id">
+                                                <option value="" disabled selected>Selecciona Materia</option>
+                                                @foreach($materias as $subject)
+                                                    <option value="{{ $subject->id }}">{{$subject->code.' - '.$subject->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <label for="materia_id">Subject</label>
+                                        </div>
+
+                                        <div class="form-group mb-3 col" id="careersDiv" style="display: none;">
+                                            <select class="form-control" name="carrera_id" id="carrera_id">
+                                                <option value="" disabled selected>Selecciona Carrera</option>
+                                                @foreach($carreras as $career)
+                                                    <option value="{{ $career->id }}">{{ $career->CodigoSIU.' - '.$career->DenominacionCarrera }}</option>
+                                                @endforeach
+                                            </select>
+                                            <label for="carrera_id">Carrera</label>
+                                        </div>
+
+                                        <div class="form-group mb-3 col" id="departmentsDiv" style="display: none;">
+                                            <select class="form-control" name="departmento_id" id="departmento_id">
+                                                <option value="" disabled selected>Selecciona Departmento</option>
+                                                @foreach($departamentos as $department)
+                                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <label for="departmento_id">Departmento</label>
                                         </div>
                                     </div>
+                                    <script>
+                                        document.getElementById('categorySelect').addEventListener('change', function () {
+                                            document.getElementById('subjectsDiv').style.display = 'none';
+                                            document.getElementById('careersDiv').style.display = 'none';
+                                            document.getElementById('departmentsDiv').style.display = 'none';
+
+                                            if (this.value === 'subjects') {
+                                                document.getElementById('subjectsDiv').style.display = 'block';
+                                            } else if (this.value === 'careers') {
+                                                document.getElementById('careersDiv').style.display = 'block';
+                                            } else if (this.value === 'departments') {
+                                                document.getElementById('departmentsDiv').style.display = 'block';
+                                            }
+                                        });
+                                    </script>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                             Cerrar

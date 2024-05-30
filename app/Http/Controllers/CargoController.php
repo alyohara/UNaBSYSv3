@@ -60,6 +60,7 @@ class CargoController extends Controller
             $cargo->fecha_baja = $request->input('fecha_baja');
             $cargo->act_des = $request->input('act_des');
             $cargo->usuario_alta = auth()->user()->id;
+            $cargo->comision = $request->input('comision');
 
             $cargo->status = 1;
 
@@ -165,6 +166,7 @@ class CargoController extends Controller
         $actDes = $request->input('act_des');
         $categoria = $request->input('categoria');
         $dedicacionHoraria = $request->input('dedicacion_horaria');
+        $comision = $request->input('comision');
 
         DB::beginTransaction();
         try {
@@ -176,6 +178,7 @@ class CargoController extends Controller
             $cargo->fecha_baja = $fechaBaja;
             $cargo->act_des = $actDes;
             $cargo->usuario_alta = auth()->user()->id;
+            $cargo->comision = $comision;
             $cargo->status = 3;
             if ($actDes == "") {
                 $cargo->act_des = "Pendiente de Carga";
@@ -295,6 +298,7 @@ class CargoController extends Controller
             $cargo->dedicacion_horaria = $request->input('dedicacion_horaria');
             $cargo->usuario_modificacion = auth()->user()->id;
             $cargo->updated_at = now();
+            $cargo->comision = $request->input('comision');
             $status_original = $cargo->status;
             if ($cargo->act_des == "" || $cargo->act_des == "Pendiente de Carga") {
                 $cargo->act_des = "Pendiente de Carga";
@@ -391,6 +395,7 @@ class CargoController extends Controller
             $cargo->categoria = $request->input('categoria');
             $cargo->dedicacion_horaria = $request->input('dedicacion_horaria');
             $cargo->usuario_modificacion = auth()->user()->id;
+            $cargo->comision = $request->input('comision');
             $cargo->updated_at = now();
             $status_original = $cargo->status;
             $cargo->status = 3;
@@ -861,6 +866,7 @@ class CargoController extends Controller
                 $cargo->fecha_renovacion = date('Y-m-d');
                 $cargo->persona_que_lo_renovo_id = auth()->user()->id;
                 $cargo->usuario_alta = auth()->user()->id;
+                $cargo->comision = $cargoOriginal->comision;
 
                 $cargo->save();
 
@@ -939,6 +945,7 @@ class CargoController extends Controller
                 $cargo->fecha_renovacion = date('Y-m-d');
                 $cargo->persona_que_lo_renovo_id = auth()->user()->id;
                 $cargo->usuario_alta = auth()->user()->id;
+                $cargo->comision = $cargoOriginal->comision;
                 $cargo->save();
 
                 $alerta = new Alerta();
@@ -1252,5 +1259,33 @@ class CargoController extends Controller
         return redirect('/cargos')->with('success', "Cargos validados correctamente.");
 
     }
+
+public function simplificadaAdmin(){
+        $materias = Subject::all()->where('deleted_at', null);
+        $profesors = Persona::whereHas('roles', function ($q) {
+            $q->where('roles.name', '=', 'profesor');
+        })->where('deleted_at', null)->orderBy('lastname')->get();
+        return view('auth.cargos.simplificadaAdmin', [
+            'materias' => $materias,
+            'profesors' => $profesors,
+        ]);
+}
+public function simplificadaCoord(){}
+public function simplificadaCargaAdmin(Request $request){
+        //recibe: materia comision profesor categoria dedicacion_horaria tipo observaciones pero uno o mas de ellos
+    // imprimir los datos de cada row
+    // Get all the request data
+    $data = $request->all();
+dd($data);
+    // Loop through each item in the data
+    foreach ($data as $key => $values) {
+        foreach ($values as $index => $value) {
+            // Print the key, index and value
+            echo "Key: " . $key . ", Index: " . $index . ", Value: " . $value . "\n";
+        }
+    }
+
+}
+public function simplificadaCargaCoord(Request $request){}
 }
 

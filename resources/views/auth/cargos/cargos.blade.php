@@ -194,6 +194,19 @@
 
 
                 });
+                document.querySelector('form').addEventListener('submit', function (event) {
+                    // Get all checkboxes
+                    var checkboxes = document.querySelectorAll('input[name="selected[]"]');
+
+                    // Check if at least one checkbox is checked
+                    var isAtLeastOneCheckboxChecked = Array.prototype.slice.call(checkboxes).some(x => x.checked);
+
+                    // If not, prevent form from being submitted and show alert
+                    if (!isAtLeastOneCheckboxChecked) {
+                        event.preventDefault();
+                        alert('Por favor, seleccione por lo menos un cargo para renovar.');
+                    }
+                });
             </script>
 
         @endauth
