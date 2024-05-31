@@ -178,7 +178,7 @@
                                                href="{{ route('cargo.simplificadaAdmin') }}">Carga
                                                 Simplificada</a></li>
                                     @endif
-                                    @if (in_array('coordinador', $userRoles))
+                                    @if (in_array('admin', $userRoles) || in_array('coordinador', $userRoles))
                                         <li><a class="dropdown-item" href="{{ route('cargo.simplificadaCoord') }}">Carga Simplificada</a></li>
                                     @endif
                                 </ul>

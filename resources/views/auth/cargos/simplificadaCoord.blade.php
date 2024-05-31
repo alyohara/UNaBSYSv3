@@ -15,84 +15,88 @@
                     <h1 class="h3 mb-3 fw-normal">Nuevos Cargos</h1>
                     <h4 class="h5 mb-3 fw-normal">Carga Simplificada</h4>
 
-                    <div class="row form-row" style="font-size: smaller">
-                        <div class="form-group col">
-                            <label for="materia">Materia</label>
-                            <select class="form-control" id="materia" name="materia" required>
-                                <option value="" selected>Seleccione</option>
-                                @foreach($materias as $materia)
-                                    <option value="{{ $materia->id }}">{{ $materia->code.' - '.$materia->name }}</option>
-                                @endforeach
-                            </select>
+                    @foreach($cargos as $cargo)
+                       
+
+                        <div class="row form-row" style="font-size: smaller">
+                            <div class="form-group col">
+                                <label for="materia">Materia</label>
+                                <select class="form-control" id="materia" name="materia" required>
+                                    <option value="" selected>Seleccione</option>
+                                    @foreach($materias as $materia)
+                                        <option value="{{ $materia->id }}">{{ $materia->code.' - '.$materia->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group col">
+                                <label for="comision">Comisión</label>
+
+                                <select class="form-control" id="comision" name="comision">
+                                    <option value="" selected>Seleccione</option>
+                                    @for($i = 1; $i <= 20; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+
+                            <div class="form-group col">
+                                <label for="profesor">Profesor</label>
+                                <select class="form-control" id="profesor" name="profesor" required>
+                                    <option value="" selected>Seleccione</option>
+                                    @foreach($profesors as $profesor)
+                                        <option value="{{ $profesor->id }}">{{ $profesor->lastname.', '.$profesor->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group col">
+                                <label for="categoria">Categoría</label>
+                                <select class="form-control" name="categoria" id="categoria" autofocus>
+                                    <option value="" disabled selected>Seleccione</option>
+
+                                    <option value="Profesor Titular (TIT)">Profesor Titular (TIT)</option>
+                                    <option value="Profesor Asociado (ASO)">Profesor Asociado (ASO)</option>
+                                    <option value="Profesor Adjunto (ADJ)">Profesor Adjunto (ADJ)</option>
+                                    <option value="Auxiliar Jefe de Trabajos Prácticos (JTP)">Auxiliar Jefe de Trabajos
+                                        Prácticos (JTP)
+                                    </option>
+                                    <option value="Auxiliar Ayudante (AuxA)">Auxiliar Ayudante (AuxA)</option>
+                                    <option value="Auxiliar Ayudante Alumno (AuxAA)">Auxiliar Ayudante Alumno (AuxAA)
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="form-group col">
+                                <label for="dedicacion_horaria">Dedicación</label>
+                                <select class="form-control" name="dedicacion_horaria" id="dedicacion_horaria"
+                                        autofocus>
+                                    <option value="" disabled selected>Seleccione</option>
+                                    <option value="Dedicación Exclusiva">Dedicación Exclusiva</option>
+                                    <option value="Dedicación Semi Exclusiva">Dedicación Semi Exclusiva</option>
+                                    <option value="Dedicación Simple">Dedicación Simple</option>
+                                    <option value="Ad Honorem">Ad Honorem</option>
+                                </select></div>
+
+                            <div class="form-group col">
+                                <label for="tipo">Condición</label>
+                                <select class="form-control" name="tipo" id="tipo" autofocus required>
+                                    <option value="" disabled selected>Seleccione</option>
+                                    <option value="Ordinario/Concursado">Ordinario/Concursado</option>
+                                    <option value="Interino">Interino</option>
+                                    <option value="Contratado">Contratado</option>
+                                </select></div>
+
+                            <div class="form-group col">
+                                <label for="observaciones">Observaciones</label>
+                                <textarea class="form-control" id="observaciones" name="observaciones"></textarea>
+                            </div>
+
                         </div>
 
-                        <div class="form-group col">
-                            <label for="comision">Comisión</label>
-
-                            <select class="form-control" id="comision" name="comision">
-                                <option value="" selected>Seleccione</option>
-                                @for($i = 1; $i <= 20; $i++)
-                                    <option value="{{ $i }}">{{ $i }}</option>
-                                @endfor
-                            </select>
-                        </div>
-
-                        <div class="form-group col">
-                            <label for="profesor">Profesor</label>
-                            <select class="form-control" id="profesor" name="profesor" required>
-                                <option value="" selected>Seleccione</option>
-                                @foreach($profesors as $profesor)
-                                    <option value="{{ $profesor->id }}">{{ $profesor->lastname.', '.$profesor->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="form-group col">
-                            <label for="categoria">Categoría</label>
-                            <select class="form-control" name="categoria" id="categoria" autofocus>
-                                <option value="" disabled selected>Seleccione</option>
-
-                                <option value="Profesor Titular (TIT)">Profesor Titular (TIT)</option>
-                                <option value="Profesor Asociado (ASO)">Profesor Asociado (ASO)</option>
-                                <option value="Profesor Adjunto (ADJ)">Profesor Adjunto (ADJ)</option>
-                                <option value="Auxiliar Jefe de Trabajos Prácticos (JTP)">Auxiliar Jefe de Trabajos
-                                    Prácticos (JTP)
-                                </option>
-                                <option value="Auxiliar Ayudante (AuxA)">Auxiliar Ayudante (AuxA)</option>
-                                <option value="Auxiliar Ayudante Alumno (AuxAA)">Auxiliar Ayudante Alumno (AuxAA)
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="form-group col">
-                            <label for="dedicacion_horaria">Dedicación</label>
-                            <select class="form-control" name="dedicacion_horaria" id="dedicacion_horaria" autofocus>
-                                <option value="" disabled selected>Seleccione</option>
-                                <option value="Dedicación Exclusiva">Dedicación Exclusiva</option>
-                                <option value="Dedicación Semi Exclusiva">Dedicación Semi Exclusiva</option>
-                                <option value="Dedicación Simple">Dedicación Simple</option>
-                                <option value="Ad Honorem">Ad Honorem</option>
-                            </select></div>
-
-                        <div class="form-group col">
-                            <label for="tipo">Condición</label>
-                            <select class="form-control" name="tipo" id="tipo" autofocus required>
-                                <option value="" disabled selected>Seleccione</option>
-                                <option value="Ordinario/Concursado">Ordinario/Concursado</option>
-                                <option value="Interino">Interino</option>
-                                <option value="Contratado">Contratado</option>
-                            </select></div>
-
-                        <div class="form-group col">
-                            <label for="observaciones">Observaciones</label>
-                            <textarea class="form-control" id="observaciones" name="observaciones"></textarea>
-                        </div>
-
-                    </div>
-
-                    <button type="button" class="btn btn-primary" id="addAnother">+ Agregar Otra</button>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-
+                        <button type="button" class="btn btn-primary" id="addAnother">+ Agregar Otra</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    @endforeach
 
                 </form>
 
@@ -204,27 +208,27 @@
                     $(document).ready(function () {
                         $('#materia').select2({
                             theme: "bootstrap",
-                            dropdownAutoWidth : true
+                            dropdownAutoWidth: true
                         });
                         $('#profesor').select2({
                             theme: "bootstrap",
-                            dropdownAutoWidth : true
+                            dropdownAutoWidth: true
                         });
                         $('#comision').select2({
                             theme: "bootstrap",
-                            dropdownAutoWidth : true
+                            dropdownAutoWidth: true
                         });
                         $('#categoria').select2({
                             theme: "bootstrap",
-                            dropdownAutoWidth : true
+                            dropdownAutoWidth: true
                         });
                         $('#dedicacion_horaria').select2({
                             theme: "bootstrap",
-                            dropdownAutoWidth : true
+                            dropdownAutoWidth: true
                         });
                         $('#tipo').select2({
                             theme: "bootstrap",
-                            dropdownAutoWidth : true
+                            dropdownAutoWidth: true
                         });
                     });
 
@@ -245,4 +249,5 @@
         @endguest
     </div>
 @endsection
+
 

@@ -689,7 +689,8 @@ class CargoController extends Controller
      * Export data with filters
      *
      */
-    public function filtros(Request $request){
+    public function filtros(Request $request)
+    {
         $apellido = request('apellido');
         $nombre = request('nombre');
         $periodo = request('periodo');
@@ -740,12 +741,12 @@ class CargoController extends Controller
                 $query->where('personas.name', 'LIKE', '%' . $nombre . '%')
                     ->where('personas.lastname', 'LIKE', '%' . $apellido . '%');
 
-            }else
-            $query->where('personas.lastname', 'LIKE', '%' . $apellido . '%');
-        }else
-        if ($nombre) {
-            $query->where('personas.name', 'LIKE', '%' . $nombre . '%');
-        }
+            } else
+                $query->where('personas.lastname', 'LIKE', '%' . $apellido . '%');
+        } else
+            if ($nombre) {
+                $query->where('personas.name', 'LIKE', '%' . $nombre . '%');
+            }
         $cargos = $query->get();
 
         if ($request->has('coordinador')) {
@@ -755,8 +756,8 @@ class CargoController extends Controller
             foreach ($cargos as $key => $cargo) {
                 $materia = $cargo->materia;
                 $coords = SubjectController::allCoord($materia->id);
-                foreach($coords as $coord){
-                    if($coord->id == $cord_id){
+                foreach ($coords as $coord) {
+                    if ($coord->id == $cord_id) {
                         $cargosAux[] = $cargo;
                     }
                 }
@@ -778,7 +779,7 @@ class CargoController extends Controller
 //        } else {
 //            $cargos = Cargo::all()->where('deleted_at', null)->sortBy('persona_id');
 //        }
-        $search =[
+        $search = [
             'apellido' => $apellido,
             'nombre' => $nombre,
             'periodo' => $periodo,
@@ -1230,6 +1231,7 @@ class CargoController extends Controller
         $docentes = array_unique($docentes);
         return $docentes;
     }
+
     public function ActAdm(Request $request)
     {
         $selected = $request->input('cargosSelectedIds');
@@ -1260,7 +1262,8 @@ class CargoController extends Controller
 
     }
 
-public function simplificadaAdmin(){
+    public function simplificadaAdmin()
+    {
         $materias = Subject::all()->where('deleted_at', null);
         $profesors = Persona::whereHas('roles', function ($q) {
             $q->where('roles.name', '=', 'profesor');
@@ -1269,23 +1272,176 @@ public function simplificadaAdmin(){
             'materias' => $materias,
             'profesors' => $profesors,
         ]);
-}
-public function simplificadaCoord(){}
-public function simplificadaCargaAdmin(Request $request){
-        //recibe: materia comision profesor categoria dedicacion_horaria tipo observaciones pero uno o mas de ellos
-    // imprimir los datos de cada row
-    // Get all the request data
-    $data = $request->all();
-dd($data);
-    // Loop through each item in the data
-    foreach ($data as $key => $values) {
-        foreach ($values as $index => $value) {
-            // Print the key, index and value
-            echo "Key: " . $key . ", Index: " . $index . ", Value: " . $value . "\n";
-        }
     }
 
-}
-public function simplificadaCargaCoord(Request $request){}
+    public function simplificadaCoord()
+    {
+        $materias = Subject::all()->where('deleted_at', null);
+        $profesors = Persona::whereHas('roles', function ($q) {
+            $q->where('roles.name', '=', 'profesor');
+        })->where('deleted_at', null)->orderBy('lastname')->get();
+        $cargos = Cargo::where('carga_simplificada', 1)->where('deleted_at', null)->get();
+        return view('auth.cargos.simplificadaCoord', [
+            'materias' => $materias,
+            'profesors' => $profesors,
+            'cargos' => $cargos,
+        ]);
+    }
+
+    public function simplificadaCargaAdmin(Request $request)
+    {
+        //recibe: materia comision profesor categoria dedicacion_horaria tipo observaciones pero uno o mas de ellos
+        // imprimir los datos de cada row
+        // Get all the request data
+        // estos cargos deben pasar a estar validados, pero con faltante de carga de resolucion
+        // la fecha de alta que se toma es la actual, que la modifiquen luego
+        // agrego fecha de alta del cargo simplificado, para saber si fue en los ultimos seis meses
+
+        // Get all the request data
+        $data = $request->all();
+        $length = count($data['materia']);
+        DB::beginTransaction();
+        try {
+            $cargo = new Cargo();
+            $cargo->persona_id = $data['profesor'][0];
+            $cargo->subject_id = $data['materia'][0];
+            $cargo->tipo = $data['tipo'][0];
+            $cargo->fecha_alta = now();
+            $cargo->usuario_alta = auth()->user()->id;
+            $cargo->comision = $data['comision'][0];
+
+            $cargo->status = 1;
+
+            if ($cargo->act_des == "") {
+                $cargo->act_des = "Pendiente de Carga";
+                $cargo->status = 2;
+            } else {
+                if (auth()->user()->userData->hasRole('coordinador') && (auth()->user()->userData->hasRole(!'acaUno') || auth()->user()->userData->hasRole('admin'))) {
+                    $cargo->status = 3;
+                }
+            }
+            $cargo->categoria = $data['categoria'][0];
+            $cargo->dedicacion_horaria = $data['dedicacion_horaria'][0];
+            $cargo->observaciones = $data['observaciones'][0];
+            $cargo->carga_simplificada = 1; // 0 no es carga simplificada, 1 es carga simplificada
+            $cargo->fecha_alta_cargo_simplificada = date('Y-m-d');
+
+
+            $cargo->save();
+
+            $alerta = new Alerta();
+            $alerta->status = 2;
+            $alerta->usuario_alta = auth()->user()->id;
+
+            if ($request->input('fecha_alta') <= date('Y-m-d') && $request->input('fecha_baja') >= date('Y-m-d') || $request->input('fecha_alta') <= date('Y-m-d') && $request->input('fecha_baja') == null) {
+                if ($cargo->act_des == "Pendiente de Carga") {
+                    $alerta->titulo = 'Alta de nuevo Cargo - Pendiente de Carga';
+                    $alerta->descripcion = 'Se ha dado de alta un nuevo cargo, pero falta cargar el acto de designación o resolución';
+                    $cargo->status = 2;
+                    $cargo->save();
+
+                } else {
+                    $alerta->titulo = 'Alta de nuevo Cargo';
+                    $alerta->descripcion = 'Se ha dado de alta un nuevo cargo';
+                }
+
+            } else {
+                if ($cargo->act_des == "Pendiente de Carga") {
+                    $alerta->titulo = 'Alta de nuevo Cargo fuera de rango de fechas - Pendiente de Carga';
+                    $alerta->descripcion = 'Se ha dado de alta un nuevo cargo, pero fuera de rango de fechas de alta y baja del mismo y falta cargar el acto de designación o resolución';
+                    $cargo->status = 2;
+                    $cargo->save();
+                } else {
+                    $alerta->titulo = 'Alta de nuevo Cargo fuera de rango de fechas';
+                    $alerta->descripcion = 'Se ha dado de alta un nuevo cargo, pero fuera de rango de fechas de alta y baja del mismo';
+                    $cargo->status = 0;
+                    $cargo->save();
+                }
+            }
+
+            $alerta->tipo = 1;
+            $alerta->origen = 2;
+            $alerta->user_id = Auth::user()->id;
+            $alerta->cargo_id = $cargo->id;
+            $alerta->materia_id = $cargo->subject_id;
+            $alerta->save();
+
+            for ($i=1; $i<$length; $i++){
+                $cargo = new Cargo();
+                $cargo->persona_id = $data['profesor'][$i][$i];
+                $cargo->subject_id = $data['materia'][$i][$i];
+                $cargo->tipo = $data['tipo'][$i][$i];
+                $cargo->fecha_alta = now();
+                $cargo->usuario_alta = auth()->user()->id;
+                $cargo->comision = $data['comision'][$i][$i];
+
+                $cargo->status = 1;
+
+                if ($cargo->act_des == "") {
+                    $cargo->act_des = "Pendiente de Carga";
+                    $cargo->status = 2;
+                } else {
+                    if (auth()->user()->userData->hasRole('coordinador') && (auth()->user()->userData->hasRole(!'acaUno') || auth()->user()->userData->hasRole('admin'))) {
+                        $cargo->status = 3;
+                    }
+                }
+                $cargo->categoria = $data['categoria'][$i][$i];
+                $cargo->dedicacion_horaria = $data['dedicacion_horaria'][$i][$i];
+                $cargo->observaciones = $data['observaciones'][$i][$i];
+                $cargo->carga_simplificada = 1; // 0 no es carga simplificada, 1 es carga simplificada
+                $cargo->fecha_alta_cargo_simplificada = date('Y-m-d');
+                $cargo->save();
+
+                $alerta = new Alerta();
+                $alerta->status = 2;
+                $alerta->usuario_alta = auth()->user()->id;
+
+                if ($request->input('fecha_alta') <= date('Y-m-d') && $request->input('fecha_baja') >= date('Y-m-d') || $request->input('fecha_alta') <= date('Y-m-d') && $request->input('fecha_baja') == null) {
+                    if ($cargo->act_des == "Pendiente de Carga") {
+                        $alerta->titulo = 'Alta de nuevo Cargo - Pendiente de Carga';
+                        $alerta->descripcion = 'Se ha dado de alta un nuevo cargo, pero falta cargar el acto de designación o resolución';
+                        $cargo->status = 2;
+                        $cargo->save();
+
+                    } else {
+                        $alerta->titulo = 'Alta de nuevo Cargo';
+                        $alerta->descripcion = 'Se ha dado de alta un nuevo cargo';
+                    }
+
+                } else {
+                    if ($cargo->act_des == "Pendiente de Carga") {
+                        $alerta->titulo = 'Alta de nuevo Cargo fuera de rango de fechas - Pendiente de Carga';
+                        $alerta->descripcion = 'Se ha dado de alta un nuevo cargo, pero fuera de rango de fechas de alta y baja del mismo y falta cargar el acto de designación o resolución';
+                        $cargo->status = 2;
+                        $cargo->save();
+                    } else {
+                        $alerta->titulo = 'Alta de nuevo Cargo fuera de rango de fechas';
+                        $alerta->descripcion = 'Se ha dado de alta un nuevo cargo, pero fuera de rango de fechas de alta y baja del mismo';
+                        $cargo->status = 0;
+                        $cargo->save();
+                    }
+                }
+
+                $alerta->tipo = 1;
+                $alerta->origen = 2;
+                $alerta->user_id = Auth::user()->id;
+                $alerta->cargo_id = $cargo->id;
+                $alerta->materia_id = $cargo->subject_id;
+                $alerta->save();
+
+            }
+            DB::commit();
+            return redirect('/cargos')->with('success', "Cargo registrado correctamente.");
+        } catch (Throwable $e) {
+            report($e);
+            DB::rollback();
+            $request->session()->flash('error', 'Ha ocurrido un error!');
+        }
+
+    }
+
+    public function simplificadaCargaCoord(Request $request)
+    {
+    }
 }
 
