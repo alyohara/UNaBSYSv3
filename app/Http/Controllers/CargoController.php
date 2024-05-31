@@ -1232,6 +1232,22 @@ class CargoController extends Controller
         return $docentes;
     }
 
+    public static function viewAllCargosCoordinadosFromMateriasCoordinadas($coordinador_id)
+    {
+        $materias = self::viewAllMateriasCoordinadas($coordinador_id);
+        $cargos = collect();
+        foreach ($materias as $materia){
+            // Get all cargos for the current materia
+            $materiaCargos = Cargo::where('subject_id', $materia->id)->get();
+            // Add the cargos to the collection
+            $cargos = $cargos->concat($materiaCargos);
+        }
+
+        return $cargos;
+
+
+    }
+
     public function ActAdm(Request $request)
     {
         $selected = $request->input('cargosSelectedIds');
@@ -1280,7 +1296,13 @@ class CargoController extends Controller
         $profesors = Persona::whereHas('roles', function ($q) {
             $q->where('roles.name', '=', 'profesor');
         })->where('deleted_at', null)->orderBy('lastname')->get();
-        $cargos = Cargo::where('carga_simplificada', 1)->where('deleted_at', null)->get();
+
+        $coordinador = Coordinador::where('user_id', Auth::user()->id)->first();
+
+
+        $cargos = self::viewAllCargosCoordinadosFromMateriasCoordinadas($coordinador->id);
+        //make them unique
+        $cargos = $cargos->unique('id')->values();
         return view('auth.cargos.simplificadaCoord', [
             'materias' => $materias,
             'profesors' => $profesors,
@@ -1442,6 +1464,33 @@ class CargoController extends Controller
 
     public function simplificadaCargaCoord(Request $request)
     {
+
+        try {
+            // Validate the request data
+            $request->validate([
+                'comision' => 'required',
+                'profesor' => 'required',
+                'cargoId' => 'required|exists:cargos,id',
+            ]);
+
+            // Find the cargo by its id
+            $cargo = Cargo::find($request->cargoId);
+
+            // Update the comision and profesor fields
+            $cargo->comision = $request->comision;
+            $cargo->persona_id = $request->profesor;
+            $cargo->observaciones = $request->observaciones;
+
+            // Save the changes
+            $cargo->save();
+
+            // Return a successful response
+            return response()->json(['message' => 'Cargo Actualizado Correctamente.'], 200);
+        } catch (\Exception $e) {
+            // Return an error response
+            return response()->json(['message' => 'Error al actualizar el cargo.'], 500);
+        }
     }
+
 }
 
