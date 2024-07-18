@@ -676,7 +676,11 @@ class CargoController extends Controller
                     ->orWhereNull('fecha_baja');
             })->join('personas', 'cargos.persona_id', '=', 'personas.id')->get();
         } else {
-            $cargos = Cargo::all()->where('deleted_at', null)->join('personas', 'cargos.persona_id', '=', 'personas.id')->sortBy('persona_id');
+            //$cargos = Cargo::all()->where('deleted_at', null)->join('personas', 'cargos.persona_id', '=', 'personas.id')->sortBy('persona_id');
+            $cargos = Cargo::join('personas', 'cargos.persona_id', '=', 'personas.id')
+                ->where('cargos.deleted_at', null)
+                ->orderBy('personas.id')
+                ->get();
         }
         $coords = Coordinador::all()->where('deleted_at', null);
         $coords2 = CoordinadorMateria::all();

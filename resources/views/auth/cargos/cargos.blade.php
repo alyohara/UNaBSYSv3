@@ -55,12 +55,17 @@
                                         $isAdminOrAca = auth()->user()->userData->hasRole('admin') || auth()->user()->userData->hasRole('acaUno') || auth()->user()->userData->hasRole('acaDos');
                                     @endphp
                                     @if($cargo->status == 1)
-                                        @php
-     // $isHabilitado must have fecha alta <= today but >= $cuatrimestre_actual->fecha_inicio && fecha_baja >= today but <= $cuatrimestre_actual->fecha_fin or fecha_baja is null
-                                       $today = Carbon\Carbon::now();
 
-                                       $isHabilitado = ($cargo->fecha_alta <= $today  && $cargo->fecha_alta >= $cuatrimestre_actual->fecha_inicio) && (!$cargo->fecha_baja || ($cargo->fecha_baja >= $today && $cargo->fecha_baja <= $cuatrimestre_actual->fecha_fin));
-                                       @endphp
+                                        @if(isset($cuatrimestre_actual->fecha_inicio) && isset($cuatrimestre_actual->fecha_fin))
+                                            @php
+                                                $today = \Carbon\Carbon::now();
+                                                $isHabilitado = ($cargo->fecha_alta <= $today && $cargo->fecha_alta >= $cuatrimestre_actual->fecha_inicio) && (!$cargo->fecha_baja || ($cargo->fecha_baja >= $today && $cargo->fecha_baja <= $cuatrimestre_actual->fecha_fin));
+                                            @endphp
+                                        @else
+                                            @php
+                                                $isHabilitado = true;
+                                            @endphp
+                                        @endif
                                         <a class="btn btn-outline-{{ $isHabilitado ? 'info' : 'danger' }} btn-sm"
                                            href="{{ $isAdminOrAca ? route('cargo.cargoToggle', $cargo->id) : '#' }}">
                                             {{ $isHabilitado ? 'Habilitado' : 'Deshabilitado' }}
