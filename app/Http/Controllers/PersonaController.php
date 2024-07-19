@@ -7,6 +7,7 @@ use App\Models\Alerta;
 use App\Models\Career;
 use App\Models\Cargo;
 use App\Models\College;
+use App\Models\Coordinador;
 use App\Models\File;
 use App\Models\Persona;
 use App\Models\Subject;
@@ -399,7 +400,8 @@ class PersonaController extends Controller
         $materias = Subject::all()->where('deleted_at', null);
         $carreras = Career::all()->where('deleted_at', null);
         $departamentos = College::all()->where('deleted_at', null);
-        return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias, 'carreras' => $carreras, 'departamentos' => $departamentos]);
+        $coordinadores = Coordinador::all()->where('deleted_at', null);
+        return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias, 'carreras' => $carreras, 'departamentos' => $departamentos, 'coordinadores' => $coordinadores],);
 
     }
 
@@ -456,18 +458,22 @@ class PersonaController extends Controller
     public function buscarPersonas(Request $request)
     {
         $nombre = $request->get('nombre');
-        $apellido = $request->get('apellido');
+        $apellido =  $request->get('apellido');
         $doc = $request->get('doc');
         $email = $request->get('email');
         $materia_id = $request->get('materia_id');
         $carrera_id = $request->get('carrera_id');
         $departamento_id = $request->get('departamento_id');
+        $coordinador_id = $request->get('coordinadorSelect');
         $materia = null;
+
+
         $personas = Persona::where('name', 'like', '%' . $nombre . '%')
             ->where('lastname', 'like', '%' . $apellido . '%')
             ->where('doc', 'like', '%' . $doc . '%')
             ->where('email', 'like', '%' . $email . '%')
-            ->get();
+        ->get();
+
 
         if ($materia_id) {
             $cargos = Cargo::all()->where('subject_id', $materia_id);
@@ -497,9 +503,6 @@ class PersonaController extends Controller
                     $personas_suma = $personas_suma->merge($personas_aux);
                 }
                 $personas = $personas_suma->unique();
-
-
-
             } else {
                 if ($departamento_id) {
                     $departamento = College::find($departamento_id);
@@ -524,10 +527,23 @@ class PersonaController extends Controller
             }
         }
 
+        if ($coordinador_id) {
+            $coordinador = Coordinador::find($coordinador_id);
+            $docentes_coordinados = CargoController::viewAllDocentesCoordinadosViaMaterias($coordinador->id);
+            $personas = $personas->filter(function ($persona) use ($docentes_coordinados) {
+                foreach ($docentes_coordinados as $docente) {
+                    if ($persona->id == $docente->id) {
+                        return $persona;
+                    }
+                }
+            });
+        }
+
 
         $materias = Subject::all()->where('deleted_at', null);
         $carreras = Career::all()->where('deleted_at', null);
         $departamentos = College::all()->where('deleted_at', null);
+        $coordinadores = Coordinador::all()->where('deleted_at', null);
 
         $search = [
             'nombre' => $request->get('nombre'),
@@ -537,9 +553,10 @@ class PersonaController extends Controller
             'materia_id' => $request->get('materia_id'),
             'materia' => $materia,
             'carrera_id' => $request->get('carrera_id'),
-            'departamento_id' => $request->get('departamento_id')
+            'departamento_id' => $request->get('departamento_id'),
+            'coordinadores' => $coordinadores
         ];
-        return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias, 'search' => $search, 'carreras' => $carreras, 'departamentos' => $departamentos]);
+        return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias, 'search' => $search, 'carreras' => $carreras, 'departamentos' => $departamentos, 'coordinadores' => $coordinadores]);
     }
 
 }

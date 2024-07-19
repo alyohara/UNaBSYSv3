@@ -1,4 +1,4 @@
-@extends('layouts.app-master-export-validate')
+@extends('layouts.app-master-export-coord')
 
 
 

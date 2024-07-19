@@ -1,4 +1,4 @@
-@extends('layouts.app-master')
+@extends('layouts.app-master-export-profesor')
 
 
 
@@ -60,6 +60,7 @@
                                             <label for="doc">Documento</label>
                                         </div>
                                     </div>
+                                    <hr>
                                     <div class="row mb-3">
                                         <div class="form-group mb-3 col">
                                             <select class="form-control" id="categorySelect">
@@ -101,6 +102,7 @@
                                             <label for="departmento_id">Departmento</label>
                                         </div>
                                     </div>
+
                                     <script>
                                         document.getElementById('categorySelect').addEventListener('change', function () {
                                             document.getElementById('subjectsDiv').style.display = 'none';
@@ -116,7 +118,30 @@
                                             }
                                         });
                                     </script>
-                                    <div class="modal-footer">
+                                    <hr>
+                                    <div class="row mb-3">
+                                        <div class="form-group mb-3 col">
+                                            <select class="form-control" id="coordinadorSelect" name="coordinadorSelect">
+                                                @foreach($coordinadores as $coordinador)
+                                                    <option value="{{ $coordinador->id }}">{{ $coordinador->user->userData->lastname }}, {{ $coordinador->user->userData->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <label for="coordinadorSelect">Coordinador</label>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        var options = $("#coordinadorSelect option");
+                                        options.detach().sort(function(a,b) {
+                                            var at = $(a).text();
+                                            var bt = $(b).text();
+                                            return (at > bt)?1:((at < bt)?-1:0);
+                                        });
+                                        $("#coordinadorSelect").append('<option value="" disabled selected>Seleciona</option>');
+                                        options.appendTo("#coordinadorSelect");
+                                        $('#coordinadorSelect').val('');
+                                    </script>
+
+                                        <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                             Cerrar
                                         </button>
