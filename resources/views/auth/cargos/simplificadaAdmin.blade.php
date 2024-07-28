@@ -18,7 +18,7 @@
                     <div class="row form-row" style="font-size: smaller">
                         <div class="form-group col">
                             <label for="materia">Materia</label>
-                            <select class="form-control" id="materia" name="materia" required>
+                            <select class="form-control" id="materia" name="materia" required >
                                 <option value="" selected>Seleccione</option>
                                 @foreach($materias as $materia)
                                     <option value="{{ $materia->id }}">{{ $materia->code.' - '.$materia->name }}</option>
@@ -226,8 +226,61 @@
                             theme: "bootstrap",
                             dropdownAutoWidth : true
                         });
+
+                        // $('#materia').on('change', function() {
+                        //     var materiaId = $(this).val() || 0; // Send 0 if no materia is selected
+                        //     if (materiaId) {
+                        //         $.ajax({
+                        //             url: '/get-profesors/' + materiaId,
+                        //             type: 'GET',
+                        //             dataType: 'json',
+                        //             success: function(data) {
+                        //                 $('#profesor').empty();
+                        //                 $('#profesor').append('<option value="" selected>Seleccione</option>');
+                        //                 $.each(data, function(key, value) {
+                        //                     $('#profesor').append('<option value="' + value.id + '">' + value.lastname + ', ' + value.name + '</option>');
+                        //                 });
+                        //             }
+                        //         });
+                        //     } else {
+                        //         $('#profesor').empty();
+                        //         $('#profesor').append('<option value="" selected>Seleccione</option>');
+                        //     }
+                        // });
                     });
 
+                    function getProfesors(selectElement) {
+                        var materiaId = $(selectElement).val() || 0; // Send 0 if no materia is selected
+                        var selectName = $(selectElement).attr('name');
+                        var index = selectName.match(/\[(\d+)\]/); // Extract the index from the name attribute
+
+                        $.ajax({
+                            url: '/get-profesors/' + materiaId,
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(data) {
+                                var profesorSelect;
+                                if (index) {
+                                    // If an index is found, target the corresponding profesor select element
+                                    profesorSelect = $('select[name="profesor[' + index[1] + ']"]');
+                                } else {
+                                    // If no index is found, target the first profesor select element
+                                    profesorSelect = $('#profesor');
+                                }
+
+                                profesorSelect.empty();
+                                profesorSelect.append('<option value="" selected>Seleccione</option>');
+                                $.each(data, function(key, value) {
+                                    profesorSelect.append('<option value="' + value.id + '">' + value.lastname + ', ' + value.name + '</option>');
+                                });
+                            }
+                        });
+                    }
+
+                    // Attach the event listener to all materia select elements
+                    $(document).on('change', 'select[name^="materia"]', function() {
+                        getProfesors(this);
+                    });
 
                 </script>
             @endif

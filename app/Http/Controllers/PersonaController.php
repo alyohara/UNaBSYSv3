@@ -458,7 +458,7 @@ class PersonaController extends Controller
     public function buscarPersonas(Request $request)
     {
         $nombre = $request->get('nombre');
-        $apellido =  $request->get('apellido');
+        $apellido = $request->get('apellido');
         $doc = $request->get('doc');
         $email = $request->get('email');
         $materia_id = $request->get('materia_id');
@@ -466,7 +466,6 @@ class PersonaController extends Controller
         $departamento_id = $request->get('departamento_id');
         $coordinador_id = $request->get('coordinadorSelect');
         $materia = null;
-
 
 
         $query = Persona::query();
@@ -573,6 +572,27 @@ class PersonaController extends Controller
             'coordinador' => $coordinador
         ];
         return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias, 'search' => $search, 'carreras' => $carreras, 'departamentos' => $departamentos, 'coordinadores' => $coordinadores]);
+    }
+
+
+    public function getProfesors($materiaId)
+    {
+        $profesors = Persona::whereHas('roles', function ($q) {
+            $q->where('roles.name', '=', 'profesor');
+        })->where('deleted_at', null)->get();
+        if ($materiaId == 0) {
+        } else {
+            //get profesors:ids from cargo where cargo.subject_id == $materiaId
+            $cargos = Cargo::where('subject_id', $materiaId)->get();
+            $profesors = $profesors->filter(function ($profesor) use ($cargos) {
+                foreach ($cargos as $cargo) {
+                    if ($profesor->id == $cargo->persona_id) {
+                        return $profesor;
+                    }
+                }
+            });
+        }
+        return response()->json($profesors);
     }
 
 }
