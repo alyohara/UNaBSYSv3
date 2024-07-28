@@ -125,3 +125,13 @@ main > .container {
     color: #ff001b;
 }
 
+.message-box {
+}
+
+.message-box h4 {
+    margin: 0;
+    color: #333;
+    font-weight: normal;
+    font-size:
+            20px;
+}

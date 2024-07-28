@@ -7,19 +7,31 @@
     <div class="bg-light p-5 rounded">
         @auth
             <div class="d-flex justify-content-between">
-                <h1>Docentes</h1> <h4>@if(isset($search))
-                        @foreach($materias as $subject)
-                            @if (isset($search)  && $search['materia_id'] == $subject->id)
-                                Materia: {{$subject->code.' - '.$subject->name}}
+                <h1>Docentes</h1>
+
+                <div class="message-box">
+                    <h4>
+                        @if(isset($search))
+                            @foreach($materias as $subject)
+                                @if (isset($search)  && $search['materia_id'] == $subject->id)
+                                    Materia: {{$subject->code.' - '.$subject->name}}
+                                @endif
+                            @endforeach
+                            @foreach($carreras as $carrera)
+                                @if (isset($search)  && $search['carrera_id'] == $carrera->id)
+                                    Carrera: {{$carrera->CodigoSIU.' - '.$carrera->DenominacionCarrera}}
+                                @endif
+                            @endforeach
+                            @if($search['coordinador'] != null)
+                                Coordinador: {{ $search['coordinador']->user->userData->lastname }}
+                                , {{ $search['coordinador']->user->userData->name }}
                             @endif
-                        @endforeach
-                        @foreach($carreras as $carrera)
-                            @if (isset($search)  && $search['carrera_id'] == $carrera->id)Carrera: {{$carrera->CodigoSIU.' - '.$carrera->DenominacionCarrera}}
-                            @endif
-                        @endforeach
-                    @endif </h4>
+                        @endif
+                    </h4>
+                </div>
+
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                        style="float: right">
+                        style="float: right; height: 40px !important">
                     Búsqueda Avanzada
                 </button>
 
@@ -121,9 +133,11 @@
                                     <hr>
                                     <div class="row mb-3">
                                         <div class="form-group mb-3 col">
-                                            <select class="form-control" id="coordinadorSelect" name="coordinadorSelect">
+                                            <select class="form-control" id="coordinadorSelect"
+                                                    name="coordinadorSelect">
                                                 @foreach($coordinadores as $coordinador)
-                                                    <option value="{{ $coordinador->id }}">{{ $coordinador->user->userData->lastname }}, {{ $coordinador->user->userData->name }}</option>
+                                                    <option value="{{ $coordinador->id }}">{{ $coordinador->user->userData->lastname }}
+                                                        , {{ $coordinador->user->userData->name }}</option>
                                                 @endforeach
                                             </select>
                                             <label for="coordinadorSelect">Coordinador</label>
@@ -131,17 +145,17 @@
                                     </div>
                                     <script>
                                         var options = $("#coordinadorSelect option");
-                                        options.detach().sort(function(a,b) {
+                                        options.detach().sort(function (a, b) {
                                             var at = $(a).text();
                                             var bt = $(b).text();
-                                            return (at > bt)?1:((at < bt)?-1:0);
+                                            return (at > bt) ? 1 : ((at < bt) ? -1 : 0);
                                         });
                                         $("#coordinadorSelect").append('<option value="" disabled selected>Seleciona</option>');
                                         options.appendTo("#coordinadorSelect");
                                         $('#coordinadorSelect').val('');
                                     </script>
 
-                                        <div class="modal-footer">
+                                    <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                             Cerrar
                                         </button>

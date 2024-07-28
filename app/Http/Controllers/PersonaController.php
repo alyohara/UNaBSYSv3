@@ -468,11 +468,26 @@ class PersonaController extends Controller
         $materia = null;
 
 
-        $personas = Persona::where('name', 'like', '%' . $nombre . '%')
-            ->where('lastname', 'like', '%' . $apellido . '%')
-            ->where('doc', 'like', '%' . $doc . '%')
-            ->where('email', 'like', '%' . $email . '%')
-        ->get();
+
+        $query = Persona::query();
+
+        if (!empty($nombre)) {
+            $query->where('name', 'like', '%' . $nombre . '%');
+        }
+
+        if (!empty($apellido)) {
+            $query->where('lastname', 'like', '%' . $apellido . '%');
+        }
+
+        if (!empty($doc)) {
+            $query->where('doc', 'like', '%' . $doc . '%');
+        }
+
+        if (!empty($email)) {
+            $query->where('email', 'like', '%' . $email . '%');
+        }
+
+        $personas = $query->get();
 
 
         if ($materia_id) {
@@ -526,6 +541,7 @@ class PersonaController extends Controller
                 }
             }
         }
+        $coordinador = null;
 
         if ($coordinador_id) {
             $coordinador = Coordinador::find($coordinador_id);
@@ -554,7 +570,7 @@ class PersonaController extends Controller
             'materia' => $materia,
             'carrera_id' => $request->get('carrera_id'),
             'departamento_id' => $request->get('departamento_id'),
-            'coordinadores' => $coordinadores
+            'coordinador' => $coordinador
         ];
         return view('auth.persona.personas', ['personas' => $personas, 'materias' => $materias, 'search' => $search, 'carreras' => $carreras, 'departamentos' => $departamentos, 'coordinadores' => $coordinadores]);
     }
