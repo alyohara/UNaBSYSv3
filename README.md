@@ -86,28 +86,28 @@ php artisan db:seed
 
 ### Iniciar el Servidor de Desarrollo
 
-bash
-
+```bash
 php artisan serve
+```
 
-Uso
+
+## Uso
 
 Una vez que el servidor esté funcionando, accede al sistema a través de http://localhost:8000 o la URL configurada en tu entorno.
-Roles de Usuario
+
+## Roles de Usuario
 
 Dependiendo del rol de usuario, se tendrá acceso a diferentes secciones y funcionalidades del sistema:
 
-    Administrador: Gestión completa de usuarios, docentes, materias, carreras y departamentos.
-    Administrativo:
-        Nivel 1: Acceso limitado a ciertas funcionalidades administrativas.
-        Nivel 2: Mayor acceso que Nivel 1, con permisos adicionales.
-    Coordinadores: Gestión y coordinación de materias, carreras y departamentos específicos.
-    Bedeles: Gestión de la carga horaria y asistencia de los docentes.
+    - Administrador: Gestión completa de usuarios, docentes, materias, carreras y departamentos.
+    - Administrativo:
+        - Nivel 2: Acceso limitado a ciertas funcionalidades administrativas.
+        - Nivel 1: Mayor acceso que Nivel 2, con permisos adicionales.
+    - Coordinadores: Gestión y coordinación de materias, carreras y departamentos específicos; junto a la desiganción y renovación de cargos.
+    - Bedeles: Gestión de la carga horaria y asistencia de los docentes.
 
-Contribución
 
-Las contribuciones son bienvenidas. Para reportar problemas o sugerir mejoras, por favor abre un "issue" o envía un "pull request".
-Licencia
+## Licencia
 
 Este proyecto está licenciado bajo la MIT License.
 
