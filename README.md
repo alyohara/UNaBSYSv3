@@ -111,3 +111,7 @@ Dependiendo del rol de usuario, se tendrá acceso a diferentes secciones y funci
 
 Este proyecto está licenciado bajo la MIT License.
 
+## Autores
+
+    - Diego Agustín Ambrossio - diego.ambrossio@unab.edu.ar
+    - Angel Leonardo Bianco - angel.bianco@unab.edu.ar
