@@ -1,51 +1,69 @@
-# UNaBSYSV3
+# UNaBSYSv3
 
-# Sistema de Gestión Docente - UNaB
+## Academic Staff Management System - UNaB
 
-Este proyecto es un sistema de gestión docente desarrollado para la Universidad Nacional de Burlanda (UNaB). El sistema permite la administración de docentes, usuarios, materias, carreras, departamentos, y la gestión de cargos docentes. Está construido utilizando Laravel 10 con Blade para las vistas y MariaDB como base de datos.
+UNaBSYSv3 is an academic staff management platform for Universidad Nacional Guillermo Brown (UNaB). It centralizes teacher records, user administration, academic structures, and faculty position assignment and renewal workflows.
 
-## Características
+The application is built with Laravel 10, Blade, and MariaDB.
 
-- **Gestión de Usuarios**:
-  - Altas, bajas y modificaciones de diferentes tipos de usuarios: administradores, personal administrativo (nivel 1 y 2), coordinadores (de materias, carreras y departamentos), y bedeles.
-- **Gestión de Docentes**:
-  - Registro de docentes.
-  - Asignación y renovación de cargos docentes.
-- **Gestión Académica**:
-  - Alta, baja y modificación de materias, carreras y departamentos.
-  - Asignación de coordinadores a materias, carreras y departamentos.
-- **Roles y Permisos**:
-  - Control de acceso basado en roles con permisos específicos para cada tipo de usuario.
+## Project Status
 
-## Requisitos del Sistema
+- Active institutional project
+- Focused on academic administration and role-based workflows
+- Suitable as a portfolio example for backend, permissions, and data-model design
 
-- **Servidor Web**: Apache/Nginx
-- **PHP**: Versión 8.1 o superior
-- **Composer**
-- **MariaDB**: Versión 10.4 o superior
+## Key Features
 
-## Instalación
+- User management:
+  - Create, update, and manage multiple user roles.
+  - Supports administrative profiles with different permission levels.
+- Faculty management:
+  - Teacher registration and profile management.
+  - Faculty position assignment and renewal workflows.
+- Academic structure management:
+  - CRUD for subjects, degree programs, and departments.
+  - Coordinator assignment by subject, degree program, and department.
+- Role-based access control:
+  - Fine-grained permissions depending on institutional role.
 
-### Clonar el Repositorio
+## Tech Stack
+
+- Backend: Laravel 10, PHP 8.1+
+- Frontend: Blade templates
+- Database: MariaDB 10.4+
+- Web server: Apache or Nginx
+
+## Deployment Notes
+
+This project is designed to run in a traditional PHP hosting environment or a server managed through Apache/Nginx.
+
+Recommended production steps:
+
+1. Configure `.env` for production credentials.
+2. Run `composer install --no-dev`.
+3. Run `php artisan migrate --force`.
+4. Cache configuration and routes.
+5. Point the web server document root to the `public/` directory.
+
+## Installation
+
+### 1) Clone the repository
 
 ```bash
-git clone https://github.com//alyohara/UNaBSYSv3.git
+git clone https://github.com/alyohara/UNaBSYSv3.git
 cd UNaBSYSv3
 ```
 
-### Configuración del Entorno
-
-#### Renombra el archivo .env.example a .env y configura tus credenciales de base de datos y otros parámetros necesarios:
+### 2) Configure environment
 
 ```bash
 cp .env.example .env
 ```
 
-#### Edita el archivo .env con tus datos de configuración:
+Update `.env` with your local configuration:
 
-```bash
-
-APP_NAME="Sistema Gestión Docente"
+```env
+APP_NAME="Academic Staff Management"
 APP_ENV=local
 APP_KEY=base64:...
 APP_DEBUG=true
@@ -54,64 +72,64 @@ APP_URL=http://localhost
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=nombre_base_datos
-DB_USERNAME=nombre_usuario
-DB_PASSWORD=contraseña
+DB_DATABASE=your_database_name
+DB_USERNAME=your_database_user
+DB_PASSWORD=your_database_password
 ```
-#### Instalar Dependencias
+
+### 3) Install dependencies
 
 ```bash
 composer install
 ```
 
-#### Generar la Clave de la Aplicación
+### 4) Generate application key
 
 ```bash
 php artisan key:generate
 ```
-### Migrar la Base de Datos
+
+### 5) Run migrations
 
 ```bash
 php artisan migrate
 ```
 
-#### Poblar la Base de Datos (opcional)
-
-Para cargar datos iniciales como usuarios de ejemplo:
+### 6) Seed database (optional)
 
 ```bash
 php artisan db:seed
 ```
 
-
-### Iniciar el Servidor de Desarrollo
+### 7) Start development server
 
 ```bash
 php artisan serve
 ```
 
+The app will be available at http://localhost:8000.
 
-## Uso
+## User Roles
 
-Una vez que el servidor esté funcionando, accede al sistema a través de http://localhost:8000 o la URL configurada en tu entorno.
+- Administrator:
+  - Full management of users, teachers, subjects, degree programs, and departments.
+- Administrative staff:
+  - Level 2: restricted administrative access.
+  - Level 1: broader operational permissions.
+- Coordinators:
+  - Management and coordination responsibilities for assigned subjects, degree programs, and departments.
+- Bedel / attendance operator:
+  - Teaching workload and attendance-related operations.
 
-## Roles de Usuario
+## Why This Project Matters
 
-Dependiendo del rol de usuario, se tendrá acceso a diferentes secciones y funcionalidades del sistema:
+This repository shows experience with institutional software, access control, normalized academic data, and workflow-driven backend development. It complements my work in health-tech and education systems.
 
-    - Administrador: Gestión completa de usuarios, docentes, materias, carreras y departamentos.
-    - Administrativo:
-        - Nivel 2: Acceso limitado a ciertas funcionalidades administrativas.
-        - Nivel 1: Mayor acceso que Nivel 2, con permisos adicionales.
-    - Coordinadores: Gestión y coordinación de materias, carreras y departamentos específicos; junto a la desiganción y renovación de cargos.
-    - Bedeles: Gestión de la carga horaria y asistencia de los docentes.
+## License
 
+This project is licensed under the MIT License.
 
-## Licencia
+## Authors
 
-Este proyecto está licenciado bajo la MIT License.
-
-## Autores
-
-    - Diego Agustín Ambrossio - diego.ambrossio@unab.edu.ar
-    - Angel Leonardo Bianco - angel.bianco@unab.edu.ar
+- Diego Agustin Ambrossio - diego.ambrossio@unab.edu.ar
+- Angel Leonardo Bianco - angel.bianco@unab.edu.ar
